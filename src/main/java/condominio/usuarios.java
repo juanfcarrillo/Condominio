@@ -4,6 +4,9 @@
  */
 package condominio;
 
+import G1_Finanzas.ConexionGrupo1;
+import G2_Usuarios.EditarPerfil;
+import G2_Usuarios.EditarPerfilAdministrador;
 import G2_Usuarios.RegistroUsuario;
 import G2_Usuarios.ResetearContraseña;
 
@@ -120,10 +123,109 @@ public class usuarios extends javax.swing.JFrame {
           setVisible(false);
     }//GEN-LAST:event_bregistrarusuarioMouseClicked
 
-    private void bresetearusuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bresetearusuarioMouseClicked
-       ResetearContraseña frame= new ResetearContraseña();
-          setVisible(false);
-    }//GEN-LAST:event_bresetearusuarioMouseClicked
+    private void beditarusuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_beditarusuarioMouseClicked
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/condominio", "root", "123456");
+            String usuario = SessionManager.getUsuario();
+            String selectQuery = "SELECT * FROM Usuario WHERE usuario = ?";
+            preparedStatement = connection.prepareStatement(selectQuery);
+            preparedStatement.setString(1, usuario);
+            resultSet = preparedStatement.executeQuery();
+            // Obtener el tipo
+            if (resultSet.next()) {
+                int tipoUsuario = resultSet.getInt("tipoUsuario");
+                // Verificar el usuario
+                if (tipoUsuario == 2) {
+                    EditarPerfil editarPerfil = new EditarPerfil();
+                    editarPerfil.setVisible(true);
+                    this.dispose(); // Cerrar el Frame actual si se abre el nuevo Frame
+                } else {
+                    // Si no es administrador, mostrar un mensaje
+                    JOptionPane.showMessageDialog(rootPane, "No eres un usuario");
+                }
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "El usuario no existe en la base de datos.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Manejar la excepción de manera adecuada, por ejemplo, mostrando un mensaje de error al usuario
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }//GEN-LAST:event_beditarusuarioMouseClicked
+
+    public String getTipoUsuario(String usuario) {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
+    String tipoUsuario = null;
+
+    try {
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/condominio", "root", "");
+        //lo de abajo lo use porque no me funciono su forma de hacer conexion
+//        ConexionGrupo1 cg1 = new ConexionGrupo1();
+//        connection = cg1.conectar();
+        String selectQuery = "SELECT tipoUsuario FROM Usuario WHERE usuario = ?";
+        preparedStatement = connection.prepareStatement(selectQuery);
+        preparedStatement.setString(1, usuario);
+        resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            // Retrieve the tipoUsuario value
+            int tipoUsuarioValue = resultSet.getInt("tipoUsuario");
+
+            // Map the tipoUsuario value to a string (modify as needed)
+            tipoUsuario = mapTipoUsuarioToString(tipoUsuarioValue);
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(EditarPerfilAdministrador.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    return tipoUsuario;
+}
+
+private String mapTipoUsuarioToString(int tipoUsuarioValue) {
+    // Modify this method to map integer tipoUsuario values to corresponding strings
+    // For example, you can use a switch statement or if-else conditions
+    switch (tipoUsuarioValue) {
+        case 1:
+            return "Tipo 1";
+        case 2:
+            return "Tipo 2";
+        // Add more cases as needed
+        default:
+            return "Unknown Type";
+    }
+}
 
     private void bresetearusuario1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bresetearusuario1MouseClicked
         // TODO add your handling code here:
@@ -132,6 +234,58 @@ public class usuarios extends javax.swing.JFrame {
     private void bresetearusuario1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bresetearusuario1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_bresetearusuario1ActionPerformed
+
+    private void badministrarperfilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_badministrarperfilesMouseClicked
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/condominio", "root", "123456");
+            String usuario = SessionManager.getUsuario();
+            String selectQuery = "SELECT * FROM Usuario WHERE usuario = ?";
+            preparedStatement = connection.prepareStatement(selectQuery);
+            preparedStatement.setString(1, usuario);
+            resultSet = preparedStatement.executeQuery();
+            // Obtener el tipo de usuario del resultado
+            if (resultSet.next()) {
+                int tipoUsuario = resultSet.getInt("tipoUsuario");
+                // Verificar si el usuario es administrador 
+                if (tipoUsuario == 1) {
+                    EditarPerfilAdministrador editarPerfilAdministrador = new EditarPerfilAdministrador();
+                    editarPerfilAdministrador.setVisible(true);
+                    this.dispose(); // Cerrar el Frame actual si se abre el nuevo Frame
+                } else {
+                    // Si no es administrador, mostrar un mensaje
+                    JOptionPane.showMessageDialog(rootPane, "No eres administrador");
+                }
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "El usuario no existe en la base de datos.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Manejar la excepción de manera adecuada, por ejemplo, mostrando un mensaje de error al usuario
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+    }//GEN-LAST:event_badministrarperfilesMouseClicked
+
+    private void badministrarperfilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_badministrarperfilesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_badministrarperfilesActionPerformed
 
     /**
      * @param args the command line arguments
