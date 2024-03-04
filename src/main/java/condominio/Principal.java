@@ -6,6 +6,7 @@ package condominio;
 
 import G1_Finanzas.Vista_FinanzasAdministrador;
 import G1_Finanzas.Vista_FinanzasCliente;
+import G2_Usuarios.SessionManager;
 import G3_Inmuebles.ModuloInmuebles;
 import G4_Reservas.AreasComunesUsuarios;
 import G6_Comunicacion.GUI_Comunicacion;
